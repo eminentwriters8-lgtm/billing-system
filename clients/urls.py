@@ -10,9 +10,18 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 
 def auto_login(request):
-    user = User.objects.get(username='mutinda')
-    login(request, user)
-    return redirect('/clients/dashboard/')  # Redirect to dashboard
+    try:
+        user = User.objects.get(username='mutinda')
+        login(request, user)
+        return redirect('/clients/dashboard/')
+    except User.DoesNotExist:
+        # If user doesn't exist, create one and log in
+        user = User.objects.create_user('mutinda', 'eminentwriters8@gmail.com', '123admin')
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
+        login(request, user)
+        return redirect('/clients/dashboard/')
 
 urlpatterns = [
     path("", views.client_list, name="client_list"),
