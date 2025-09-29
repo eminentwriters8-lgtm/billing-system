@@ -12,3 +12,8 @@ class ClientAdmin(admin.ModelAdmin):
     search_fields = ["first_name", "last_name", "username"]
 class ClientAdmin(admin.ModelAdmin):
     list_display = ['name', 'ipv4_address', 'installation_date', 'last_seen_online', 'physical_address']
+from .models import IPPool
+
+@admin.register(IPPool)
+class IPPoolAdmin(admin.ModelAdmin):
+    list_display = ['name', 'network', 'subnet_mask', 'gateway', 'start_ip', 'end_ip']

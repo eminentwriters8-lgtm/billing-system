@@ -1,0 +1,49 @@
+# Simple Deployment Script
+Write-Host "Deploying Africa Online Networks Billing System" -ForegroundColor Magenta
+Write-Host "===============================================" -ForegroundColor Magenta
+
+# Check if module exists
+if (-not (Test-Path ".\AfricaOnlineBilling.psm1")) {
+    Write-Host "❌ AfricaOnlineBilling.psm1 not found!" -ForegroundColor Red
+    Write-Host "Please create the module file first." -ForegroundColor Yellow
+    exit 1
+}
+
+# Create module directory
+$moduleDir = "AfricaOnlineBilling"
+if (-not (Test-Path $moduleDir)) {
+    New-Item -ItemType Directory -Path $moduleDir -Force
+    Write-Host "✅ Created module directory" -ForegroundColor Green
+}
+
+# Copy module
+Copy-Item ".\AfricaOnlineBilling.psm1" -Destination "$moduleDir\AfricaOnlineBilling.psm1" -Force
+Write-Host "✅ Copied module" -ForegroundColor Green
+
+# Create manifest
+$manifestParams = @{
+    Path = "$moduleDir\AfricaOnlineBilling.psd1"
+    RootModule = "AfricaOnlineBilling.psm1"
+    ModuleVersion = "1.0.0"
+    Author = "Africa Online Networks"
+    Description = "Billing system for Africa Online Networks"
+    PowerShellVersion = "5.1"
+    FunctionsToExport = @('Show-BillingDashboard', 'New-Client', 'Get-Clients', 'New-Invoice', 'Get-Invoices', 'Get-ServicePlans')
+}
+New-ModuleManifest @manifestParams
+Write-Host "✅ Created module manifest" -ForegroundColor Green
+
+# Test deployment
+Write-Host "`nTesting deployment..." -ForegroundColor Yellow
+try {
+    Import-Module .\AfricaOnlineBilling -Force
+    Write-Host "✅ Module imported successfully" -ForegroundColor Green
+    
+    Show-BillingDashboard
+    
+    Write-Host "`n🎉 DEPLOYMENT SUCCESSFUL!" -ForegroundColor Green
+    Write-Host "Usage: Import-Module .\AfricaOnlineBilling" -ForegroundColor Cyan
+    
+} catch {
+    Write-Host "❌ Deployment test failed: $($_.Exception.Message)" -ForegroundColor Red
+}

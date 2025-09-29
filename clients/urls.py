@@ -1,4 +1,7 @@
-﻿# Auto-login feature added for easy access
+﻿import json
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+# Auto-login feature added for easy access
 from django.urls import path
 from django.views.generic import TemplateView
 from . import views
@@ -40,3 +43,32 @@ urlpatterns = [
     # Auto-login URL - Add this line
     path("auto-login/", auto_login, name="auto_login"),
 ]
+from .views import save_client_location
+
+# Add to urlpatterns:
+path("location/save/<int:client_id>/", save_client_location, name="save_client_location"),
+path("location/<int:client_id>/", views.client_location_pin, name="client_location_pin"),
+def client_location_pin(request, client_id):
+    client = get_object_or_404(Client, id=client_id)
+    return render(request, 'clients/location_pin.html', {'client': client})
+
+def save_client_location(request, client_id):
+    if request.method == 'POST':
+        try:
+            client = Client.objects.get(id=client_id)
+            data = json.loads(request.body)
+            client.latitude = data.get('latitude')
+            client.longitude = data.get('longitude')
+            # Optional: Save address if provided
+            if data.get('address'):
+                client.physical_address = data.get('address')
+            client.save()
+            return JsonResponse({'status': 'success'})
+        except Client.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Client not found'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+from .views import save_client_location, client_location_pin
+
+# Add to urlpatterns list:
+path("location/<int:client_id>/", client_location_pin, name="client_location_pin"),
+path("location/save/<int:client_id>/", save_client_location, name="save_client_location"),

@@ -1,6 +1,7 @@
 ﻿from django.db import models
 from django.utils import timezone
 from datetime import timedelta
+from django.contrib.auth.models import User
 
 class ServicePlan(models.Model):
     name = models.CharField(max_length=100)
@@ -11,6 +12,37 @@ class ServicePlan(models.Model):
     
     def __str__(self):
         return f"{self.name} - KSH {self.price}"
+
+class IPPool(models.Model):
+    name = models.CharField(max_length=50)
+    network = models.GenericIPAddressField(protocol='IPv4')
+    subnet_mask = models.PositiveIntegerField(default=24)
+    gateway = models.GenericIPAddressField(protocol='IPv4')
+    start_ip = models.GenericIPAddressField(protocol='IPv4')
+    end_ip = models.GenericIPAddressField(protocol='IPv4')
+    dns_servers = models.CharField(max_length=100, default='8.8.8.8,8.8.4.4')
+    
+    def __str__(self):
+        return f"{self.name} ({self.network}/{self.subnet_mask})"
+    
+    def get_next_available_ip(self):
+        # Get all used IPs in this pool
+        used_ips = Client.objects.filter(
+            ipv4_address__isnull=False
+        ).values_list('ipv4_address', flat=True)
+        
+        # Convert IPs to integers for comparison
+        import ipaddress
+        start_ip = ipaddress.IPv4Address(self.start_ip)
+        end_ip = ipaddress.IPv4Address(self.end_ip)
+        
+        # Find first available IP
+        current_ip = start_ip
+        while current_ip <= end_ip:
+            if str(current_ip) not in used_ips:
+                return str(current_ip)
+            current_ip += 1
+        return None
 
 class Client(models.Model):
     SERVICE_TYPES = [
@@ -43,6 +75,20 @@ class Client(models.Model):
     password = models.CharField(max_length=50)
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     mac_address = models.CharField(max_length=17, blank=True, null=True)
+    
+    # IP Pool Management
+    ip_pool = models.ForeignKey(IPPool, on_delete=models.SET_NULL, blank=True, null=True)
+    ipv4_address = models.GenericIPAddressField(protocol='IPv4', blank=True, null=True)
+    
+    # Location tracking
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    physical_address = models.TextField(blank=True)
+    router_port = models.PositiveIntegerField(blank=True, null=True)
+    
+    # Connection tracking
+    installation_date = models.DateField(blank=True, null=True)
+    last_seen_online = models.DateTimeField(blank=True, null=True)
     
     # Billing Information
     service_plan = models.ForeignKey(ServicePlan, on_delete=models.PROTECT)
@@ -99,8 +145,6 @@ class Payment(models.Model):
     
     def __str__(self):
         return f"Payment {self.amount} - {self.client.username}"
-from django.contrib.auth.models import User
-from django.db import models
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -108,16 +152,3 @@ class UserProfile(models.Model):
     
     def __str__(self):
         return f"{self.user.username} Profile"
-    # Location tracking
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    physical_address = models.TextField(blank=True)
-    
-    # Network information
-    ipv4_address = models.GenericIPAddressField(protocol='IPv4', blank=True, null=True)
-    mac_address = models.CharField(max_length=17, blank=True)
-    router_port = models.PositiveIntegerField(blank=True, null=True)
-    
-    # Connection tracking
-    installation_date = models.DateField(blank=True, null=True)
-    last_seen_online = models.DateTimeField(blank=True, null=True)
