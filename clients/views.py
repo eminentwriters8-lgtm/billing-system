@@ -47,3 +47,19 @@ def client_location_pin(request, client_id):
 import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from .resources import ClientResource, PaymentResource
+
+def export_clients_excel(request):
+    client_resource = ClientResource()
+    dataset = client_resource.export()
+    response = HttpResponse(dataset.xlsx, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="clients_backup.xlsx"'
+    return response
+
+def export_payments_excel(request):
+    payment_resource = PaymentResource()
+    dataset = payment_resource.export()
+    response = HttpResponse(dataset.xlsx, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="payments_backup.xlsx"'
+    return response

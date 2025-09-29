@@ -72,3 +72,8 @@ from .views import save_client_location, client_location_pin
 # Add to urlpatterns list:
 path("location/<int:client_id>/", client_location_pin, name="client_location_pin"),
 path("location/save/<int:client_id>/", save_client_location, name="save_client_location"),
+from .views import export_clients_excel, export_payments_excel
+
+# Add to urlpatterns:
+path("export/clients/", export_clients_excel, name="export_clients"),
+path("export/payments/", export_payments_excel, name="export_payments"),
