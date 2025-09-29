@@ -10,3 +10,5 @@ class ClientAdmin(admin.ModelAdmin):
     list_display = ["full_name", "username", "service_type", "status", "monthly_rate", "next_billing_date"]
     list_filter = ["service_type", "status"]
     search_fields = ["first_name", "last_name", "username"]
+class ClientAdmin(admin.ModelAdmin):
+    list_display = ['name', 'ipv4_address', 'installation_date', 'last_seen_online', 'physical_address']

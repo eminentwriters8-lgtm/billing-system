@@ -108,3 +108,16 @@ class UserProfile(models.Model):
     
     def __str__(self):
         return f"{self.user.username} Profile"
+    # Location tracking
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    physical_address = models.TextField(blank=True)
+    
+    # Network information
+    ipv4_address = models.GenericIPAddressField(protocol='IPv4', blank=True, null=True)
+    mac_address = models.CharField(max_length=17, blank=True)
+    router_port = models.PositiveIntegerField(blank=True, null=True)
+    
+    # Connection tracking
+    installation_date = models.DateField(blank=True, null=True)
+    last_seen_online = models.DateTimeField(blank=True, null=True)
