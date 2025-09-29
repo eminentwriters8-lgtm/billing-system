@@ -1,2 +1,2 @@
-web: python manage.py migrate && gunicorn isp_billing.wsgi:application
-release: python manage.py migrate
+release: python manage.py migrate && python create_admin.py
+web: gunicorn isp_billing.wsgi:application
