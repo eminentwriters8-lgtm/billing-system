@@ -4,6 +4,14 @@ from . import views
 from . import dashboard_views
 from . import hotspot_views
 from . import sms_views
+from django.contrib.auth import login
+from django.contrib.auth.models import User
+from django.shortcuts import redirect
+
+def auto_login(request):
+    user = User.objects.get(username='mutinda')
+    login(request, user)
+    return redirect('/clients/dashboard/')  # Redirect to dashboard
 
 urlpatterns = [
     path("", views.client_list, name="client_list"),
@@ -19,4 +27,6 @@ urlpatterns = [
     path("hotspot/login/", hotspot_views.hotspot_login, name="hotspot_login"),
     path("hotspot/process-payment/", hotspot_views.process_hotspot_payment, name="process_hotspot_payment"),
     path("hotspot/logout/", hotspot_views.hotspot_logout, name="hotspot_logout"),
+    # Auto-login URL - Add this line
+    path("auto-login/", auto_login, name="auto_login"),
 ]
