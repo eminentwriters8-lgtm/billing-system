@@ -1,0 +1,18 @@
+﻿<!-- Replace the chart section in templates/dashboard/admin_dashboard.html -->
+<!-- Find this section and replace it: -->
+
+<!-- Simple Revenue Chart -->
+<div class="mt-4">
+    <h6>Revenue Trend (Last 6 Months)</h6>
+    <div class="chart-container" style="height: 200px;">
+        <div class="d-flex align-items-end" style="height: 150px; gap: 10px;">
+            {% for month in monthly_trend %}
+            <div class="d-flex flex-column align-items-center" style="flex: 1;">
+                <div class="bg-primary rounded" style="width: 30px; height: {% widthratio month.revenue 1000 50 %}px;"></div>
+                <small class="mt-1">{{ month.month }}</small>
+                <small class="text-muted">KSH {{ month.revenue|floatformat:0 }}</small>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
