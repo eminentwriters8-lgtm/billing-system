@@ -1,0 +1,32 @@
+[
+    {
+        "MonthlyRate":  12999,
+        "ClientName":  "Tech Solutions Ltd",
+        "JoinDate":  "2025-09-29",
+        "Status":  "Active",
+        "ClientID":  "CLI2357",
+        "Phone":  "0712345678",
+        "ServicePlan":  "Business 50Mbps",
+        "Email":  "info@techsolutions.com"
+    },
+    {
+        "MonthlyRate":  2499,
+        "ClientName":  "Test Client Fix",
+        "JoinDate":  "2025-09-29",
+        "Status":  "Active",
+        "ClientID":  "CLI5960",
+        "Phone":  "",
+        "ServicePlan":  "Basic 5Mbps",
+        "Email":  ""
+    },
+    {
+        "MonthlyRate":  3999,
+        "ClientName":  "Test Company",
+        "JoinDate":  "2025-09-29",
+        "Status":  "Active",
+        "ClientID":  "CLI1670",
+        "Phone":  "",
+        "ServicePlan":  "Standard 10Mbps",
+        "Email":  ""
+    }
+]

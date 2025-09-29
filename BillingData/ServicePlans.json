@@ -1,0 +1,20 @@
+[
+    {
+        "Bandwidth":  "5Mbps",
+        "PlanName":  "Basic 5Mbps",
+        "MonthlyRate":  2499,
+        "PlanID":  "BASIC"
+    },
+    {
+        "Bandwidth":  "10Mbps",
+        "PlanName":  "Standard 10Mbps",
+        "MonthlyRate":  3999,
+        "PlanID":  "STANDARD"
+    },
+    {
+        "Bandwidth":  "20Mbps",
+        "PlanName":  "Premium 20Mbps",
+        "MonthlyRate":  6499,
+        "PlanID":  "PREMIUM"
+    }
+]
