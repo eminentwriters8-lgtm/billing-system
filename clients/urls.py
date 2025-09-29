@@ -1,4 +1,5 @@
-﻿from django.urls import path
+﻿# Auto-login feature added for easy access
+from django.urls import path
 from django.views.generic import TemplateView
 from . import views
 from . import dashboard_views
