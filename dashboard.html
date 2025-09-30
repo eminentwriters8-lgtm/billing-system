@@ -1,0 +1,41 @@
+<!-- Add this to your existing dashboard template -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-network-wired"></i> Network Traffic Monitor
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="network-stat">
+                    <h6>Current Usage</h6>
+                    <h3 id="current-usage">0 Mbps</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="network-stat">
+                    <h6>Download</h6>
+                    <h3 id="download-speed">0 Mbps</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="network-stat">
+                    <h6>Upload</h6>
+                    <h3 id="upload-speed">0 Mbps</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="network-stat">
+                    <h6>Active Sessions</h6>
+                    <h3 id="active-sessions">0</h3>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Small chart -->
+        <div class="mt-3">
+            <canvas id="networkTrafficChart" height="100"></canvas>
+        </div>
+    </div>
+</div>

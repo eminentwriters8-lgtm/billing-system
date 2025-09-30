@@ -4,6 +4,10 @@ from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from . import views
+# Remove problematic imports if the files don't exist
+# from . import dashboard_views
+# from . import hotspot_views  
+# from . import sms_views
 
 def auto_login(request):
     try:
@@ -11,6 +15,7 @@ def auto_login(request):
         login(request, user)
         return redirect('/clients/dashboard/')
     except User.DoesNotExist:
+        # If user doesn't exist, create one and log in
         user = User.objects.create_user('mutinda', 'eminentwriters8@gmail.com', '123admin')
         user.is_staff = True
         user.is_superuser = True
@@ -19,27 +24,33 @@ def auto_login(request):
         return redirect('/clients/dashboard/')
 
 urlpatterns = [
-    # Existing Client URLs
+    # Main client URLs
     path('', views.client_list, name='client_list'),
     path('new/', views.client_create, name='client_create'),
+    
+    # Dashboard - FIXED: Use views.client_dashboard instead of dashboard_views.admin_dashboard
     path('dashboard/', views.client_dashboard, name='client_dashboard'),
+    
+    # About page
     path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
+    
+    # SMS URLs - COMMENTED OUT until sms_views exists
+    # path('sms/compose/', sms_views.send_bulk_sms, name='sms_compose'),
+    # path('sms/reminder/<int:client_id>/', sms_views.send_payment_reminder, name='send_reminder'),
+    
+    # Hotspot URLs - COMMENTED OUT until hotspot_views exists
+    # path('hotspot/login/', hotspot_views.hotspot_login, name='hotspot_login'),
+    # path('hotspot/process-payment/', hotspot_views.process_hotspot_payment, name='process_hotspot_payment'),
+    # path('hotspot/logout/', hotspot_views.hotspot_logout, name='hotspot_logout'),
+    
+    # Auto-login URL
     path('auto-login/', auto_login, name='auto_login'),
+    
+    # Location URLs
     path('location/<int:client_id>/', views.client_location_pin, name='client_location_pin'),
     path('location/save/<int:client_id>/', views.save_client_location, name='save_client_location'),
     
-    # WhatsApp URLs
-    path('whatsapp/compose/', views.whatsapp_bulk_send, name='whatsapp_compose'),
-    path('whatsapp/results/', views.whatsapp_results, name='whatsapp_results'),
-    path('whatsapp/reminders/', views.whatsapp_payment_reminders, name='whatsapp_reminders'),
-    
-    # NEW: Network Monitor URLs
-    path('network/dashboard/', views.network_dashboard, name='network_dashboard'),
-    path('network/live/', views.network_live_dashboard, name='network_live_dashboard'),
-    path('network/api/traffic/', views.network_traffic_api, name='network_traffic_api'),
-    path('network/api/alerts/', views.network_alerts_api, name='network_alerts_api'),
-    path('network/api/health/', views.network_health_check, name='network_health_check'),
-    path('network/api/usage/', views.network_usage_breakdown, name='network_usage_api'),
-    path('network/api/peak-hours/', views.network_peak_hours, name='network_peak_hours'),
-    path('dashboard/combined/', views.combined_dashboard, name='combined_dashboard'),
+    # Export URLs (commented out until resources are fixed)
+    # path('export/clients/', export_clients_excel, name='export_clients'),
+    # path('export/payments/', export_payments_excel, name='export_payments'),
 ]
