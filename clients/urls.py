@@ -52,3 +52,11 @@ urlpatterns = [
     # path('export/clients/', export_clients_excel, name='export_clients'),
     # path('export/payments/', export_payments_excel, name='export_payments'),
 ]
+from .views import whatsapp_bulk_send, whatsapp_results, whatsapp_payment_reminders
+
+urlpatterns = [
+    # ... your existing URLs ...
+    path("whatsapp/compose/", whatsapp_bulk_send, name="whatsapp_compose"),
+    path("whatsapp/results/", whatsapp_results, name="whatsapp_results"),
+    path("whatsapp/reminders/", whatsapp_payment_reminders, name="whatsapp_reminders"),
+]
