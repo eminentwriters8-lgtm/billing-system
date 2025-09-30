@@ -13,22 +13,22 @@ class ServicePlan(models.Model):
 
 class Client(models.Model):
     STATUS_CHOICES = [
-        ('active', 'Active'),
-        ('suspended', 'Suspended'),
-        ('inactive', 'Inactive'),
+        ("active", "Active"),
+        ("suspended", "Suspended"),
+        ("inactive", "Inactive"),
     ]
     
     CONNECTION_STATUS_CHOICES = [
-        ('online', 'Online'),
-        ('offline', 'Offline'),
-        ('unknown', 'Unknown'),
+        ("online", "Online"),
+        ("offline", "Offline"),
+        ("unknown", "Unknown"),
     ]
     
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     service_plan = models.ForeignKey(ServicePlan, on_delete=models.SET_NULL, null=True, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
-    connection_status = models.CharField(max_length=20, choices=CONNECTION_STATUS_CHOICES, default='unknown')
-    ipv4_address = models.GenericIPAddressField(protocol='IPv4', null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="active")
+    connection_status = models.CharField(max_length=20, choices=CONNECTION_STATUS_CHOICES, default="unknown")
+    ipv4_address = models.GenericIPAddressField(protocol="IPv4", null=True, blank=True)
     next_billing_date = models.DateField(null=True, blank=True)
     last_seen_online = models.DateTimeField(null=True, blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
@@ -42,25 +42,25 @@ class Client(models.Model):
 
 class Payment(models.Model):
     PAYMENT_STATUS_CHOICES = [
-        ('Completed', 'Completed'),
-        ('Pending', 'Pending'),
-        ('Failed', 'Failed'),
+        ("Completed", "Completed"),
+        ("Pending", "Pending"),
+        ("Failed", "Failed"),
     ]
     
-    client = models.ForeignKey('Client', on_delete=models.CASCADE)
+    client = models.ForeignKey("Client", on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_date = models.DateTimeField(default=timezone.now)
-    status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='Pending')
+    status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default="Pending")
     transaction_id = models.CharField(max_length=100, blank=True)
     
     def __str__(self):
-        return f'Payment {self.id}'
+        return f"Payment {self.id}"
 
 class DataUsage(models.Model):
-    client = models.ForeignKey('Client', on_delete=models.CASCADE)
+    client = models.ForeignKey("Client", on_delete=models.CASCADE)
     data_used = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     data_limit = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     usage_date = models.DateTimeField(default=timezone.now)
     
     def __str__(self):
-        return f'{self.client} - {self.data_used}GB'
+        return f"{self.client} - {self.data_used}GB"

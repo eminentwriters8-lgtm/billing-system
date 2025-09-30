@@ -92,6 +92,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 INSTALLED_APPS = [
-    # ... your existing apps ...
-    'import_export',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'clients',
+    'billing',
+    'crispy_forms',
+    'crispy_bootstrap5',
+    'import_export',  # ADD THIS LINE
 ]

@@ -1,0 +1,26 @@
+import africastalking
+
+# Initialize Africa's Talking with YOUR credentials
+username = "matombiti"  # Try without space first
+api_key = "atsk_4452aa99cd6609fc76a33e558f46eb59e4056ff7610766f235ab72793adedc87fa2c2e41"
+
+africastalking.initialize(username, api_key)
+sms = africastalking.SMS
+
+def send_billing_sms(customer_phone, customer_name, invoice_number, amount):
+    # Format phone number to international format
+    if customer_phone.startswith('0'):
+        customer_phone = '+254' + customer_phone[1:]
+    
+    message = f"Hello {customer_name}, your invoice #{invoice_number} for KES {amount} is ready. Thank you!"
+    
+    try:
+        response = sms.send(message, [customer_phone], "YOUR_SENDER_ID")
+        print(f"SMS sent! Response: {response}")
+        return True
+    except Exception as e:
+        print(f"Failed to send SMS: {e}")
+        return False
+
+# Test the function
+send_billing_sms("0712345678", "John Test", "INV-001", 1500)
