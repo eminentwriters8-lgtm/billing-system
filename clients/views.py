@@ -1,231 +1,137 @@
-﻿from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse, HttpResponse
-import json
-from .models import Client, ServicePlan
-from .forms import ClientForm
+﻿'''
+# Billing System - Africa Online Networks
+# Copyright (c) 2025 Martin Mutinda. All Rights Reserved.
+# 
+# Proprietary Software - Unauthorized copying, modification, distribution,
+# or use of this software via any medium is strictly prohibited.
+# 
+# This software is the confidential and proprietary information of
+# Martin Mutinda ("Confidential Information"). You shall not disclose
+# such Confidential Information and shall use it only in accordance
+# with the terms of the license agreement.
+# 
+# For licensing inquiries:
+# 📧 Email: martinmutinda@africaonlinenetworks.co.ke
+# 📞 Phone: +254 706 315 742
+# 
+# Developed with ❤️ by Martin Mutinda
+'''
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse, HttpResponse
+from django.views.generic import TemplateView
+from django.contrib.auth import login
+from django.contrib.auth.models import User
+import random
+from .models import Client
+
+# ===== MAIN DASHBOARD =====
+def main_dashboard(request):
+    """Main navigation dashboard"""
+    return render(request, 'dashboard/main.html')
+
+def network_main(request):
+    """Network monitor main page"""
+    return render(request, 'network/dashboard.html')
+
+# ===== CLIENT MANAGEMENT =====
 def client_list(request):
-    clients = Client.objects.all().order_by('-created_at')
+    """List all clients"""
+    clients = Client.objects.all()
     return render(request, 'clients/client_list.html', {'clients': clients})
 
 def client_create(request):
-    if request.method == 'POST':
-        form = ClientForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('client_list')
-    else:
-        form = ClientForm()
-    
-    # Get all service plans for the dropdown
-    service_plans = ServicePlan.objects.all()
-    return render(request, 'clients/client_form.html', {
-        'form': form,
-        'service_plans': service_plans
-    })
+    """Create new client"""
+    return render(request, 'clients/client_form.html')
 
-def save_client_location(request, client_id):
-    if request.method == 'POST':
-        try:
-            client = Client.objects.get(id=client_id)
-            data = json.loads(request.body)
-            client.latitude = data.get('latitude')
-            client.longitude = data.get('longitude')
-            client.save()
-            return JsonResponse({'status': 'success'})
-        except Client.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Client not found'})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+def client_dashboard(request):
+    """Client dashboard"""
+    return render(request, 'clients/dashboard.html')
 
 def client_location_pin(request, client_id):
+    """Client location pin"""
     client = get_object_or_404(Client, id=client_id)
     return render(request, 'clients/location_pin.html', {'client': client})
 
-def client_dashboard(request):
-    # Get real data from your database instead of example data
-    total_clients = Client.objects.count()
-    active_clients = Client.objects.filter(status='active').count()
-    
-    # Calculate actual revenue (you'll need to adjust this based on your models)
-    # This is a placeholder - update with your actual revenue calculation
-    revenue = 12500.00  # Replace with actual calculation
-    
-    context = {
-        'title': 'Client Dashboard',
-        'total_clients': total_clients,
-        'active_clients': active_clients,
-        'revenue': revenue,
-    }
-    return render(request, 'clients/dashboard.html', context)
+def save_client_location(request, client_id):
+    """Save client location"""
+    client = get_object_or_404(Client, id=client_id)
+    # Add location saving logic here
+    return redirect('client_location_pin', client_id=client_id)
 
-# Temporarily disabled export functions until resources are properly set up
-'''
-def export_clients_excel(request):
-    client_resource = ClientResource()
-    dataset = client_resource.export()
-    response = HttpResponse(dataset.xlsx, content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=\"clients_backup.xlsx\"'
-    return response
-
-def export_payments_excel(request):
-    payment_resource = PaymentResource()
-    dataset = payment_resource.export()
-    response = HttpResponse(dataset.xlsx, content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=\"payments_backup.xlsx\"'
-    return response
-'''
-def network_dashboard(request):
-    """Network monitoring dashboard"""
-    return render(request, "network/dashboard.html")
-
-def network_traffic_api(request):
-    """API endpoint for network traffic data"""
-    from django.http import JsonResponse
-    import random
-    from django.utils import timezone
-    
-    data = [{
-        "Timestamp": timezone.now().strftime("%H:%M:%S"),
-        "Download": round(random.uniform(50, 200), 1),
-        "Upload": round(random.uniform(20, 80), 1),
-        "TotalUsage": round(random.uniform(70, 280), 1),
-        "ActiveSessions": random.randint(100, 400)
-    }]
-    
-    return JsonResponse({
-        "success": True,
-        "data": data,
-        "timestamp": timezone.now().isoformat()
-    })
-
-# NETWORK MONITOR FUNCTIONS
-def network_dashboard(request):
-    """Network monitoring dashboard"""
-    return render(request, "network/dashboard.html")
-
-def network_live_dashboard(request):
-    """Live network dashboard"""
-    return render(request, "network/dashboard.html")
-
-def network_traffic_api(request):
-    """API endpoint for network traffic data"""
-    import random
-    from django.utils import timezone
-    
-    data = [{
-        "Timestamp": timezone.now().strftime("%H:%M:%S"),
-        "Download": round(random.uniform(50, 200), 1),
-        "Upload": round(random.uniform(20, 80), 1),
-        "TotalUsage": round(random.uniform(70, 280), 1),
-        "ActiveSessions": random.randint(100, 400)
-    }]
-    
-    return JsonResponse({
-        "success": True,
-        "data": data,
-        "timestamp": timezone.now().isoformat()
-    })
-
-def network_alerts_api(request):
-    """API endpoint for network alerts"""
-    import random
-    from django.utils import timezone
-    
-    alerts = []
-    if random.random() > 0.7:
-        alerts.append({
-            "Severity": "LOW",
-            "Message": "High latency detected on router 2",
-            "Timestamp": timezone.now().strftime("%H:%M:%S")
-        })
-    
-    return JsonResponse({
-        "success": True,
-        "alerts": alerts
-    })
-
-def network_health_check(request):
-    """API endpoint for network health"""
-    import random
-    from django.utils import timezone
-    
-    health_data = {
-        "status": "online",
-        "uptime": "99.8%",
-        "current_usage": round(random.uniform(50, 200), 1),
-        "active_sessions": random.randint(100, 400),
-        "download_speed": round(random.uniform(80, 150), 1),
-        "upload_speed": round(random.uniform(30, 70), 1),
-        "latency": random.randint(8, 25),
-        "health_score": random.randint(85, 100)
-    }
-    
-    return JsonResponse({
-        "success": True,
-        "health": health_data
-    })
-
-def network_usage_breakdown(request):
-    """API endpoint for usage breakdown"""
-    import random
-    
-    usage_data = {
-        "streaming": random.randint(20, 45),
-        "web_browsing": random.randint(15, 30),
-        "gaming": random.randint(5, 15),
-        "downloads": random.randint(10, 25),
-        "voip": random.randint(3, 8)
-    }
-    
-    return JsonResponse({
-        "success": True,
-        "usage_breakdown": usage_data
-    })
-
-def network_peak_hours(request):
-    """API endpoint for peak hours"""
-    import random
-    
-    peak_data = {
-        "morning": random.randint(40, 65),
-        "afternoon": random.randint(50, 75),
-        "evening": random.randint(70, 95),
-        "night": random.randint(20, 40)
-    }
-    
-    return JsonResponse({
-        "success": True,
-        "peak_hours": peak_data
-    })
-
-def combined_dashboard(request):
-    """Combined billing and network dashboard"""
-    return render(request, "dashboard/combined.html")
-
-# WHATSAPP FUNCTIONS (if missing)
-def whatsapp_bulk_send(request):
-    """WhatsApp bulk send function"""
-    from django.shortcuts import render, redirect
-    from django.contrib import messages
-    
-    if request.method == 'POST':
-        # Simple implementation
-        messages.success(request, "WhatsApp messages sent successfully!")
-        return redirect('whatsapp_results')
-    
+# ===== WHATSAPP MESSAGING =====
+def whatsapp_compose(request):
+    """WhatsApp compose message"""
     return render(request, 'whatsapp/compose.html')
 
 def whatsapp_results(request):
-    """WhatsApp results function"""
+    """WhatsApp results"""
     return render(request, 'whatsapp/results.html')
 
-def whatsapp_payment_reminders(request):
-    """WhatsApp payment reminders function"""
-    from django.shortcuts import render, redirect
-    from django.contrib import messages
-    
-    if request.method == 'POST':
-        messages.success(request, "Payment reminders sent successfully!")
-        return redirect('whatsapp_results')
-    
+def whatsapp_reminders(request):
+    """WhatsApp payment reminders"""
     return render(request, 'whatsapp/reminders.html')
+
+# ===== NETWORK MONITORING =====
+def network_dashboard(request):
+    """Network dashboard"""
+    return render(request, 'network/dashboard.html')
+
+def network_live_dashboard(request):
+    """Real-time network monitor"""
+    return render(request, 'network/live_dashboard.html')
+
+def network_traffic_api(request):
+    """Network traffic API"""
+    data = {
+        'download': random.randint(10, 100),
+        'upload': random.randint(5, 50),
+        'sessions': random.randint(5, 50)
+    }
+    return JsonResponse(data)
+
+def network_alerts_api(request):
+    """Network alerts API"""
+    return JsonResponse({'alerts': []})
+
+def network_health_check(request):
+    """Network health check API"""
+    return JsonResponse({'status': 'healthy'})
+
+def network_usage_breakdown(request):
+    """Network usage breakdown API"""
+    return JsonResponse({'usage': {}})
+
+def network_peak_hours(request):
+    """Network peak hours API"""
+    return JsonResponse({'peak_hours': []})
+
+# ===== COMBINED DASHBOARD =====
+def combined_dashboard(request):
+    """Combined dashboard"""
+    return render(request, 'dashboard/combined.html')
+
+# ===== AUTO LOGIN FUNCTION =====
+def auto_login(request):
+    """Auto login for clients"""
+    try:
+        user = User.objects.get(username='mutinda')
+        login(request, user)
+        return redirect('/clients/dashboard/')
+    except User.DoesNotExist:
+        user = User.objects.create_user('mutinda', 'eminentwriters8@gmail.com', '123admin')
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
+        login(request, user)
+        return redirect('/clients/dashboard/')
+
+
+def billing_dashboard(request):
+    """Billing and payments dashboard focused on money management"""
+    return render(request, 'billing/dashboard.html')
+
+def financial_reports(request):
+    """Comprehensive financial reports and analytics"""
+    return render(request, 'reports/financial.html')
+

@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Africa Online Networks - Main Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+        .nav-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 30px; max-width: 1200px; margin: 0 auto; }
+        .nav-card { background: white; padding: 30px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.3s; }
+        .nav-card:hover { transform: translateY(-5px); }
+        .nav-icon { font-size: 48px; margin-bottom: 15px; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+        .stat-card { background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center; }
+        .money { color: #27ae60; font-weight: bold; }
+        .clients { color: #3498db; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌍 Africa Online Networks</h1>
+        <p>Complete Billing & Network Management System</p>
+    </div>
+
+    <div class="nav-grid">
+        <!-- Client Management - Focused on PPPoE & Hotspot Clients -->
+        <div class="nav-card" onclick="location.href='/clients/list/'">
+            <div class="nav-icon">👥</div>
+            <h2>Client Management</h2>
+            <p>Manage PPPoE & Hotspot clients, subscriptions, and services</p>
+            <div class="stats">
+                <div class="stat-card">
+                    <h3 class="clients" id="active-clients">0</h3>
+                    <p>Active Clients</p>
+                </div>
+                <div class="stat-card">
+                    <h3 class="clients" id="pppoe-clients">0</h3>
+                    <p>PPPoE Users</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Billing System - PURELY ABOUT MONEY & PAYMENTS -->
+        <div class="nav-card" onclick="location.href='/clients/billing/'">
+            <div class="nav-icon">💰</div>
+            <h2>Billing & Payments</h2>
+            <p>Manage payments, invoices, revenue tracking, and financial reports</p>
+            <div class="stats">
+                <div class="stat-card">
+                    <h3 class="money" id="monthly-revenue">KSH 0</h3>
+                    <p>Monthly Revenue</p>
+                </div>
+                <div class="stat-card">
+                    <h3 class="money" id="pending-payments">0</h3>
+                    <p>Pending Payments</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Network Monitor -->
+        <div class="nav-card" onclick="location.href='/clients/network/live/'">
+            <div class="nav-icon">🌐</div>
+            <h2>Network Monitor</h2>
+            <p>Real-time bandwidth monitoring, data usage tracking, and network analytics</p>
+            <div class="stats">
+                <div class="stat-card">
+                    <h3 id="current-usage">0 Mbps</h3>
+                    <p>Current Usage</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="active-sessions-main">0</h3>
+                    <p>Active Sessions</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports & Analytics -->
+        <div class="nav-card" onclick="location.href='/clients/reports/'">
+            <div class="nav-icon">📊</div>
+            <h2>Financial Reports</h2>
+            <p>Revenue reports, payment analytics, and financial performance</p>
+        </div>
+
+        <!-- WhatsApp Messaging -->
+        <div class="nav-card" onclick="location.href='/clients/whatsapp/reminders/'">
+            <div class="nav-icon">📱</div>
+            <h2>Payment Reminders</h2>
+            <p>Send payment notifications, invoices, and payment reminders</p>
+        </div>
+
+        <!-- System Admin -->
+        <div class="nav-card" onclick="location.href='/admin/'">
+            <div class="nav-icon">⚙️</div>
+            <h2>System Administration</h2>
+            <p>User management, system settings, and configuration</p>
+        </div>
+    </div>
+
+    <div style="text-align: center; padding: 30px; color: #666;">
+        <p>© 2025 Africa Online Networks. Support: 📞 0706315742</p>
+    </div>
+
+    <script>
+        // Update dashboard stats
+        function updateDashboardStats() {
+            // Simulated data - replace with actual API calls
+            document.getElementById('active-clients').textContent = '24';
+            document.getElementById('pppoe-clients').textContent = '18';
+            document.getElementById('monthly-revenue').textContent = 'KSH 45,200';
+            document.getElementById('pending-payments').textContent = '6';
+            
+            // Network stats
+            fetch('/clients/network/api/traffic/')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('current-usage').textContent = data.download + ' Mbps';
+                    document.getElementById('active-sessions-main').textContent = data.sessions;
+                })
+                .catch(error => {
+                    console.log('Network stats unavailable');
+                });
+        }
+        
+        updateDashboardStats();
+    </script>
+</body>
+</html>
+
+
