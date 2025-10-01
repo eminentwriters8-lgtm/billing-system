@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-your-secret-key-here-change-in-production'
 DEBUG = True
 
 # Allow all hosts for development
-ALLOWED_HOSTS = ['billing-system-1-j6uu.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['billing-system-1-j6uu.onrender.com', '.onrender.com', 'localhost', '127.0.0.1']
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -152,6 +152,7 @@ if 'runserver' in sys.argv:
         print('Forced clients admin registration')
     except Exception as e:
         print(f'Force registration failed: {e}')
+
 
 
 
