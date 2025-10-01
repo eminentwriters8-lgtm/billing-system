@@ -5,7 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-your-secret-key-here-change-in-production'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['billing-system-1-j6uu.onrender.com', '.onrender.com', 'localhost', '127.0.0.1']
 
@@ -89,3 +89,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
