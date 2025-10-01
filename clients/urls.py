@@ -1,7 +1,9 @@
 ﻿from django.urls import path
 from . import views
+from .views import create_admin
 
 urlpatterns = [
+    path('create-admin/', create_admin, name='create_admin'),
     # Main Dashboard & Navigation
     path('', views.main_dashboard, name='main_dashboard'),
     path('dashboard/', views.combined_dashboard, name='combined_dashboard'),
@@ -51,3 +53,4 @@ urlpatterns = [
     # Data APIs
     path('api/dashboard/', views.get_real_dashboard_data, name='get_real_dashboard_data'),
 ]
+

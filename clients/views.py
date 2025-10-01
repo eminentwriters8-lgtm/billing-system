@@ -495,3 +495,15 @@ def network_peak_hours_api(request):
     return JsonResponse({'peak_hours': peak_hours})
 
 
+
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse
+
+def create_admin(request):
+    User = get_user_model()
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser('admin', 'admin@example.com', '123')
+        return HttpResponse("Admin user created! Username: admin, Password: 123")
+    else:
+        user = User.objects.get(username='admin')
+        return HttpResponse(f"Admin user already exists: {user.username}")
