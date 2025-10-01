@@ -9,5 +9,5 @@ psutil==5.9.8
 requests==2.31.0
 redis==5.0.1
 PyJWT==2.8.0
-africastalking==0.4.6
+africastalking==2.0.1
 librouteros==3.3.0
