@@ -1,78 +1,53 @@
-﻿'''
-# Billing System - Africa Online Networks
-# Copyright (c) 2025 Martin Mutinda. All Rights Reserved.
-# 
-# Proprietary Software - Unauthorized copying, modification, distribution,
-# or use of this software via any medium is strictly prohibited.
-# 
-# This software is the confidential and proprietary information of
-# Martin Mutinda ("Confidential Information"). You shall not disclose
-# such Confidential Information and shall use it only in accordance
-# with the terms of the license agreement.
-# 
-# For licensing inquiries:
-# 📧 Email: martinmutinda@africaonlinenetworks.co.ke
-# 📞 Phone: +254 706 315 742
-# 
-# Developed with ❤️ by Martin Mutinda
-'''
-
-from django.urls import path
-from django.views.generic import TemplateView
-from django.contrib.auth import login
-from django.contrib.auth.models import User
-from django.shortcuts import redirect
+﻿from django.urls import path
 from . import views
 
-def auto_login(request):
-    try:
-        user = User.objects.get(username='mutinda')
-        login(request, user)
-        return redirect('/clients/dashboard/')
-    except User.DoesNotExist:
-        user = User.objects.create_user('mutinda', 'eminentwriters8@gmail.com', '123admin')
-        user.is_staff = True
-        user.is_superuser = True
-        user.save()
-        login(request, user)
-        return redirect('/clients/dashboard/')
-
 urlpatterns = [
-    # Main dashboard
-    path('billing/', views.billing_dashboard, name='billing_dashboard'),
-    
-    # Main dashboard
+    # Main Dashboard & Navigation
     path('', views.main_dashboard, name='main_dashboard'),
+    path('dashboard/', views.combined_dashboard, name='combined_dashboard'),
     
-    # Client management
-    path('list/', views.client_list, name='client_list'),
-    path('new/', views.client_create, name='client_create'),
-    path('dashboard/', views.client_dashboard, name='client_dashboard'),
-    path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
-    path('auto-login/', auto_login, name='auto_login'),
-    path('location/<int:client_id>/', views.client_location_pin, name='client_location_pin'),
-    path('location/save/<int:client_id>/', views.save_client_location, name='save_client_location'),
-
-    # WhatsApp URLs
-    path('whatsapp/compose/', views.whatsapp_compose, name='whatsapp_compose'),
-    path('whatsapp/results/', views.whatsapp_results, name='whatsapp_results'),
-    path('whatsapp/reminders/', views.whatsapp_reminders, name='whatsapp_reminders'),
-
-    # Network Monitor URLs
-    path('network/dashboard/', views.network_dashboard, name='network_dashboard'),
+    # Client Management
+    path('clients/', views.client_list, name='client_list'),
+    path('clients/new/', views.client_create, name='client_create'),
+    path('clients/dashboard/', views.client_dashboard, name='client_dashboard'),
+    path('clients/management/', views.client_management, name='client_management'),
+    path('clients/location/<int:client_id>/', views.client_location_pin, name='client_location_pin'),
+    path('clients/location/save/<int:client_id>/', views.save_client_location, name='save_client_location'),
+    
+    # Billing & Financial
+    path('billing/', views.billing_dashboard, name='billing_dashboard'),
+    path('billing/management/', views.billing_management, name='billing_management'),
+    path('billing/reports/', views.reports_dashboard, name='reports_dashboard'),
+    
+    # Network Management
+    path('network/', views.network_dashboard, name='network_dashboard'),
     path('network/live/', views.network_live_dashboard, name='network_live_dashboard'),
+    path('network/sync/', views.sync_mikrotik_users, name='sync_mikrotik_users'),
+    
+    # Network API Endpoints
     path('network/api/traffic/', views.network_traffic_api, name='network_traffic_api'),
     path('network/api/alerts/', views.network_alerts_api, name='network_alerts_api'),
-    path('network/api/health/', views.network_health_check, name='network_health_check'),
-    path('network/api/usage/', views.network_usage_breakdown, name='network_usage_api'),
-    path('network/api/peak-hours/', views.network_peak_hours, name='network_peak_hours'),
+    path('network/api/health/', views.network_health_api, name='network_health_api'),
+    path('network/api/usage/', views.network_usage_api, name='network_usage_api'),
+    path('network/api/peak-hours/', views.network_peak_hours_api, name='network_peak_hours_api'),
+    path('network/health-check/', views.network_health_check, name='network_health_check'),
+    path('network/usage-breakdown/', views.network_usage_breakdown, name='network_usage_breakdown'),
+    path('network/peak-hours/', views.network_peak_hours, name='network_peak_hours'),
     
-    # Financial Reports
-    path('reports/', views.financial_reports, name='financial_reports'),
+    # Messaging
+    path('messaging/', views.whatsapp_compose, name='whatsapp_compose'),
+    path('messaging/results/', views.whatsapp_results, name='whatsapp_results'),
+    path('messaging/reminders/', views.whatsapp_reminders, name='whatsapp_reminders'),
     
-    # Combined dashboard
-    path('dashboard/combined/', views.combined_dashboard, name='combined_dashboard'),
+    # System Management
+    path('system/', views.system_management, name='system_management'),
+    path('system/reset/', views.reset_system_data, name='reset_system_data'),
+    path('system/initialize/', views.initialize_system, name='initialize_system'),
+    path('system/stats/', views.get_system_stats, name='get_system_stats'),
+    
+    # Auto-login (for development)
+    path('auto-login/', views.auto_login, name='auto_login'),
+    
+    # Data APIs
+    path('api/dashboard/', views.get_real_dashboard_data, name='get_real_dashboard_data'),
 ]
-
-
-

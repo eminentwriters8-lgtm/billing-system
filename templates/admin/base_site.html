@@ -1,0 +1,53 @@
+﻿{% extends "admin/base.html" %}
+
+{% load static %}
+
+{% block title %}{{ title }} | Africa Online Networks{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        <img src="{% static 'admin/img/icon.svg' %}" height="40px" />
+        🌍 Africa Online Networks - Administration
+    </a>
+</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block extrahead %}
+<style>
+:root {
+    --primary: #667eea;
+    --primary-dark: #764ba2;
+}
+
+#header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+}
+
+#branding h1 {
+    color: white;
+}
+
+.module h2, .module caption, .inline-group h2 {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+}
+
+div.breadcrumbs {
+    background: var(--primary-dark);
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: var(--primary);
+}
+
+.button:hover, input[type=submit]:hover, input[type=button]:hover {
+    background: var(--primary-dark);
+}
+
+.selector-chosen h2 {
+    background: var(--primary) !important;
+}
+</style>
+{% endblock %}

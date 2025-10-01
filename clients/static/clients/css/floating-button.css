@@ -1,0 +1,33 @@
+﻿/* Floating Add Client Button */
+.floating-add-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border-radius: 50%;
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(40, 167, 69, 0.4);
+    transition: all 0.3s ease;
+    border: 3px solid white;
+}
+
+.floating-add-btn:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 6px 25px rgba(40, 167, 69, 0.6);
+    color: white;
+    text-decoration: none;
+}
+
+/* Hide on admin pages */
+body.admin-page .floating-add-btn {
+    display: none !important;
+}

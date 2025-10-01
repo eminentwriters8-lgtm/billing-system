@@ -1,0 +1,55 @@
+﻿{% extends "clients/base_management.html" %}
+{% block title %}System Settings - Billing System{% endblock %}
+{% block page_title %}System Settings{% endblock %}
+
+{% block content %}
+<div class="section" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+    <h3>Current System Settings</h3>
+    
+    {% if settings %}
+    <form method="post">
+        {% csrf_token %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Setting Key</th>
+                    <th>Current Value</th>
+                    <th>Description</th>
+                    <th>New Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for setting in settings %}
+                <tr>
+                    <td>{{ setting.key }}</td>
+                    <td>{{ setting.value }}</td>
+                    <td>{{ setting.description }}</td>
+                    <td>
+                        <input type="text" name="setting_{{ setting.id }}" value="{{ setting.value }}" 
+                               style="width: 100%; padding: 5px;">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-success">Update Settings</button>
+    </form>
+    {% else %}
+    <p>No system settings configured.</p>
+    {% endif %}
+</div>
+
+<!-- Add New Setting -->
+<div class="section" style="background: white; padding: 20px; border-radius: 8px;">
+    <h3>Add New Setting</h3>
+    <form method="post">
+        {% csrf_token %}
+        <div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 10px; margin-bottom: 10px;">
+            <input type="text" name="new_key" placeholder="Setting Key" required>
+            <input type="text" name="new_value" placeholder="Setting Value" required>
+            <input type="text" name="new_description" placeholder="Description">
+        </div>
+        <button type="submit" class="btn">Add Setting</button>
+    </form>
+</div>
+{% endblock %}

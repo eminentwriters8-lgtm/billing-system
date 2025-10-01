@@ -1,0 +1,84 @@
+﻿{% extends "clients/base_management.html" %}
+{% block title %}Internet Packages - Billing System{% endblock %}
+{% block page_title %}Internet Packages Management{% endblock %}
+
+{% block content %}
+<div class="stats">
+    <div class="stat-card">
+        <h3>Total Packages</h3>
+        <p style="font-size: 24px; margin: 0;">{{ total_packages }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Active Packages</h3>
+        <p style="font-size: 24px; margin: 0; color: #28a745;">{{ active_packages }}</p>
+    </div>
+</div>
+
+<!-- Create New Package Form -->
+<div class="section" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+    <h3>Create New Package</h3>
+    <form method="post" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create">
+        
+        <input type="text" name="name" placeholder="Package Name" required>
+        <input type="text" name="speed" placeholder="Speed (e.g., 10Mbps)" required>
+        <input type="number" name="price" placeholder="Price (KSh)" step="0.01" required>
+        <input type="text" name="data_limit" placeholder="Data Limit (e.g., Unlimited)" required>
+        <select name="plan_type">
+            <option value="Residential">Residential</option>
+            <option value="Business">Business</option>
+            <option value="Corporate">Corporate</option>
+        </select>
+        <button type="submit" class="btn btn-success">Create Package</button>
+    </form>
+</div>
+
+<!-- Packages List -->
+<h3>Available Packages</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Package Name</th>
+            <th>Speed</th>
+            <th>Price</th>
+            <th>Data Limit</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for package in packages %}
+        <tr>
+            <td>{{ package.name }}</td>
+            <td>{{ package.speed }}</td>
+            <td>KSh {{ package.price|floatformat:2 }}</td>
+            <td>{{ package.data_limit }}</td>
+            <td>{{ package.plan_type }}</td>
+            <td>
+                {% if package.is_active %}
+                    <span style="color: #28a745; font-weight: bold;">Active</span>
+                {% else %}
+                    <span style="color: #dc3545; font-weight: bold;">Inactive</span>
+                {% endif %}
+            </td>
+            <td>
+                <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="toggle">
+                    <input type="hidden" name="package_id" value="{{ package.id }}">
+                    <button type="submit" class="btn" style="padding: 5px 10px; font-size: 12px;">
+                        {% if package.is_active %}Deactivate{% else %}Activate{% endif %}
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" style="text-align: center;">No packages found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

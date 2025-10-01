@@ -1,0 +1,117 @@
+﻿{% extends "clients/base_management.html" %}
+{% block title %}Manage Payouts - Billing System{% endblock %}
+{% block page_title %}Manage Payouts & Payments{% endblock %}
+
+{% block content %}
+<div class="stats">
+    <div class="stat-card">
+        <h3>Total Payments</h3>
+        <p style="font-size: 24px; margin: 0;">{{ total_payments }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Total Revenue</h3>
+        <p style="font-size: 24px; margin: 0; color: #28a745;">KSh {{ total_revenue|floatformat:2 }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Payment Methods</h3>
+        <p style="font-size: 24px; margin: 0;">{{ payment_methods|length }}</p>
+    </div>
+</div>
+
+<!-- Date Filters -->
+<div class="filters">
+    <form method="get" style="display: flex; gap: 10px; align-items: center;">
+        <label>From:</label>
+        <input type="date" name="date_from" value="{{ date_from }}">
+        
+        <label>To:</label>
+        <input type="date" name="date_to" value="{{ date_to }}">
+        
+        <button type="submit" class="btn">Apply Filter</button>
+        <a href="?date_from=&date_to=" class="btn" style="background: #6c757d;">Clear</a>
+    </form>
+</div>
+
+<!-- Payment Methods Summary -->
+<div class="section" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+    <h3>Payment Methods Breakdown</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Payment Method</th>
+                <th>Transactions</th>
+                <th>Total Amount</th>
+                <th>Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for method in payment_methods %}
+            <tr>
+                <td>{{ method.payment_method|default:"Unknown" }}</td>
+                <td>{{ method.count }}</td>
+                <td>KSh {{ method.total|floatformat:2 }}</td>
+                <td>{{ method.total|div:total_revenue|mul:100|floatformat:1 }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Recent Payments -->
+<h3>Recent Payments</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Client</th>
+            <th>Invoice</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Transaction ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for payment in recent_payments %}
+        <tr>
+            <td>{{ payment.payment_date|date:"M d, Y" }}</td>
+            <td>{{ payment.client.name }}</td>
+            <td>{{ payment.invoice.invoice_number }}</td>
+            <td>KSh {{ payment.amount|floatformat:2 }}</td>
+            <td>{{ payment.payment_method }}</td>
+            <td>{{ payment.transaction_id|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" style="text-align: center;">No payments found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- All Payments (if needed) -->
+{% if payments.count > 10 %}
+<div style="margin-top: 20px;">
+    <h3>All Payments</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Client</th>
+                <th>Amount</th>
+                <th>Method</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+            <tr>
+                <td>{{ payment.payment_date|date:"M d, Y" }}</td>
+                <td>{{ payment.client.name }}</td>
+                <td>KSh {{ payment.amount|floatformat:2 }}</td>
+                <td>{{ payment.payment_method }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

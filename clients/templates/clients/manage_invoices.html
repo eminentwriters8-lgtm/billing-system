@@ -1,0 +1,78 @@
+﻿{% extends "clients/base_management.html" %}
+{% block title %}Manage Invoices - Billing System{% endblock %}
+{% block page_title %}Manage Invoices{% endblock %}
+
+{% block content %}
+<div class="stats">
+    <div class="stat-card">
+        <h3>Total Invoices</h3>
+        <p style="font-size: 24px; margin: 0;">{{ total_invoices }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Pending Invoices</h3>
+        <p style="font-size: 24px; margin: 0; color: #ffc107;">{{ pending_invoices }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Paid Invoices</h3>
+        <p style="font-size: 24px; margin: 0; color: #28a745;">{{ paid_invoices }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Total Revenue</h3>
+        <p style="font-size: 24px; margin: 0; color: #17a2b8;">KSh {{ total_revenue|floatformat:2 }}</p>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filters">
+    <form method="get" style="display: flex; gap: 10px; align-items: center;">
+        <label>Status:</label>
+        <select name="status" onchange="this.form.submit()">
+            <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All</option>
+            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="paid" {% if status_filter == 'paid' %}selected{% endif %}>Paid</option>
+        </select>
+        
+        <label>Date:</label>
+        <select name="date" onchange="this.form.submit()">
+            <option value="all" {% if date_filter == 'all' %}selected{% endif %}>All Time</option>
+            <option value="this_month" {% if date_filter == 'this_month' %}selected{% endif %}>This Month</option>
+            <option value="overdue" {% if date_filter == 'overdue' %}selected{% endif %}>Overdue</option>
+        </select>
+    </form>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Invoice #</th>
+            <th>Client</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Due Date</th>
+            <th>Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for invoice in invoices %}
+        <tr>
+            <td>{{ invoice.invoice_number }}</td>
+            <td>{{ invoice.client.name }}</td>
+            <td>KSh {{ invoice.amount|floatformat:2 }}</td>
+            <td>
+                {% if invoice.status == 'paid' %}
+                    <span style="color: #28a745; font-weight: bold;">Paid</span>
+                {% else %}
+                    <span style="color: #ffc107; font-weight: bold;">Pending</span>
+                {% endif %}
+            </td>
+            <td>{{ invoice.due_date }}</td>
+            <td>{{ invoice.created_at|date:"M d, Y" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" style="text-align: center;">No invoices found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

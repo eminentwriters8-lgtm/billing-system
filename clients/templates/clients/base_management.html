@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Billing System - Management{% endblock %}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
+        .stat-card h3 { margin: 0 0 10px 0; color: #666; font-size: 14px; }
+        .stat-card .value { font-size: 24px; font-weight: bold; color: #333; }
+        .content { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn { display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; margin: 5px; }
+        .btn:hover { background: #0056b3; }
+        .btn-danger { background: #dc3545; }
+        .btn-success { background: #28a745; }
+        .btn-warning { background: #ffc107; color: #000; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f8f9fa; font-weight: bold; }
+        .filters { background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .section { margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{% block page_title %}Management Panel{% endblock %}</h1>
+            <div>
+                <a href="/clients/" class="btn">Dashboard</a>
+                <a href="/clients/manage/clients/" class="btn">Clients</a>
+                <a href="/clients/manage/packages/" class="btn">Packages</a>
+                <a href="/clients/manage/invoices/" class="btn">Invoices</a>
+                <a href="/clients/manage/payouts/" class="btn">Payouts</a>
+                <a href="/clients/system/settings/" class="btn">Settings</a>
+                <a href="/clients/system/reset-history/" class="btn">Reset History</a>
+                <a href="/admin/" class="btn" style="background: #6c757d;">Admin</a>
+            </div>
+        </div>
+
+        {% if messages %}
+        <div style="margin-bottom: 20px;">
+            {% for message in messages %}
+            <div style="padding: 10px; background: #d4edda; color: #155724; border-radius: 4px; margin: 5px 0;">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>

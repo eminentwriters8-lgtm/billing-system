@@ -1,0 +1,201 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }} - Billing System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .form-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        .form-control:focus { border-color: #007bff; outline: none; box-shadow: 0 0 0 2px rgba(0,123,255,0.25); }
+        .btn { display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; margin-right: 10px; }
+        .btn-success { background: #28a745; }
+        .btn-secondary { background: #6c757d; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+        .form-section h3 { margin-top: 0; color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        .required label::after { content: " *"; color: #dc3545; }
+        .error-list { color: #dc3545; font-size: 12px; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{ title }}</h1>
+            <div>
+                {% if quick_add %}
+                    <a href="/clients/" class="btn">Back to Dashboard</a>
+                {% else %}
+                    <a href="/clients/manage/clients/" class="btn">Back to Clients</a>
+                {% endif %}
+                <a href="/admin/clients/client/add/" class="btn btn-secondary">Admin Add</a>
+            </div>
+        </div>
+
+        {% if messages %}
+        <div style="margin-bottom: 20px;">
+            {% for message in messages %}
+            <div style="padding: 10px; background: #d4edda; color: #155724; border-radius: 4px; margin: 5px 0;">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="form-container">
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Personal Information -->
+                <div class="form-section">
+                    <h3>Personal Information</h3>
+                    <div class="form-row">
+                        <div class="form-group required">
+                            <label for="id_name">Full Name</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="error-list">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group required">
+                            <label for="id_email">Email Address</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="error-list">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group required">
+                            <label for="id_phone">Phone Number</label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                                <div class="error-list">{{ form.phone.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_id_number">ID Number</label>
+                            {{ form.id_number }}
+                            {% if form.id_number.errors %}
+                                <div class="error-list">{{ form.id_number.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_address">Physical Address</label>
+                        {{ form.address }}
+                        {% if form.address.errors %}
+                            <div class="error-list">{{ form.address.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Service Information -->
+                <div class="form-section">
+                    <h3>Service Information</h3>
+                    <div class="form-row">
+                        <div class="form-group required">
+                            <label for="id_client_type">Client Type</label>
+                            {{ form.client_type }}
+                            {% if form.client_type.errors %}
+                                <div class="error-list">{{ form.client_type.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group required">
+                            <label for="id_service_plan">Service Plan</label>
+                            {{ form.service_plan }}
+                            {% if form.service_plan.errors %}
+                                <div class="error-list">{{ form.service_plan.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group required">
+                            <label for="id_username">Username</label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="error-list">{{ form.username.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group required">
+                            <label for="id_password">Password</label>
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                                <div class="error-list">{{ form.password.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group required">
+                        <label for="id_monthly_fee">Monthly Fee (KSh)</label>
+                        {{ form.monthly_fee }}
+                        {% if form.monthly_fee.errors %}
+                            <div class="error-list">{{ form.monthly_fee.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Location Information (Optional) -->
+                <div class="form-section">
+                    <h3>Location Information (Optional)</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_latitude">Latitude</label>
+                            {{ form.latitude }}
+                            {% if form.latitude.errors %}
+                                <div class="error-list">{{ form.latitude.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_longitude">Longitude</label>
+                            {{ form.longitude }}
+                            {% if form.longitude.errors %}
+                                <div class="error-list">{{ form.longitude.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button type="submit" class="btn btn-success" style="padding: 12px 30px; font-size: 16px;">
+                        Add Client
+                    </button>
+                    {% if quick_add %}
+                        <a href="/clients/" class="btn btn-secondary">Cancel</a>
+                    {% else %}
+                        <a href="/clients/manage/clients/" class="btn btn-secondary">Cancel</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Auto-fill monthly fee based on service plan selection
+        document.getElementById('id_service_plan').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.textContent.includes('KSh')) {
+                const priceMatch = selectedOption.textContent.match(/KSh\s*([\d,]+(\.\d{2})?)/);
+                if (priceMatch) {
+                    const price = priceMatch[1].replace(',', '');
+                    document.getElementById('id_monthly_fee').value = price;
+                }
+            }
+        });
+
+        // Set default client type if not set
+        document.addEventListener('DOMContentLoaded', function() {
+            const clientTypeField = document.getElementById('id_client_type');
+            if (!clientTypeField.value) {
+                clientTypeField.value = 'Residential';
+            }
+        });
+    </script>
+</body>
+</html>

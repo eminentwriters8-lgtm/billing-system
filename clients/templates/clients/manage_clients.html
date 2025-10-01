@@ -1,0 +1,89 @@
+﻿{% extends "clients/base_management.html" %}
+{% block title %}Manage Clients - Billing System{% endblock %}
+{% block page_title %}Manage Clients{% endblock %}
+
+{% block content %}
+<div class="stats">
+    <div class="stat-card">
+        <h3>Total Clients</h3>
+        <p style="font-size: 24px; margin: 0;">{{ total_clients }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Active Clients</h3>
+        <p style="font-size: 24px; margin: 0; color: #28a745;">{{ active_clients }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Inactive Clients</h3>
+        <p style="font-size: 24px; margin: 0; color: #dc3545;">{{ inactive_clients }}</p>
+    </div>
+</div>
+
+<!-- Action Buttons -->
+<div style="margin-bottom: 20px; display: flex; gap: 10px;">
+    <a href="{% url 'add_client' %}" class="btn btn-success">+ Add New Client</a>
+    <a href="/admin/clients/client/add/" class="btn btn-secondary">Admin Add Client</a>
+    
+    <!-- Filters -->
+    <div style="margin-left: auto; display: flex; gap: 10px; align-items: center;">
+        <form method="get" style="display: flex; gap: 10px;">
+            <select name="status" onchange="this.form.submit()">
+                <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Status</option>
+                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active Only</option>
+                <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive Only</option>
+            </select>
+            
+            <select name="plan" onchange="this.form.submit()">
+                <option value="all" {% if plan_filter == 'all' %}selected{% endif %}>All Plans</option>
+                {% for plan in plans %}
+                <option value="{{ plan.id }}" {% if plan_filter == plan.id|stringformat:"i" %}selected{% endif %}>
+                    {{ plan.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Service Plan</th>
+            <th>Status</th>
+            <th>Balance</th>
+            <th>Created</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for client in clients %}
+        <tr>
+            <td>{{ client.name }}</td>
+            <td>{{ client.email }}</td>
+            <td>{{ client.phone }}</td>
+            <td>{{ client.service_plan.name }}</td>
+            <td>
+                {% if client.is_active %}
+                    <span style="color: #28a745; font-weight: bold;">Active</span>
+                {% else %}
+                    <span style="color: #dc3545; font-weight: bold;">Inactive</span>
+                {% endif %}
+            </td>
+            <td>KSh {{ client.balance|floatformat:2 }}</td>
+            <td>{{ client.created_at|date:"M d, Y" }}</td>
+            <td>
+                <a href="/admin/clients/client/{{ client.id }}/change/" class="btn" style="padding: 5px 10px; font-size: 12px;">
+                    Edit
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8" style="text-align: center;">No clients found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,57 @@
+﻿{% extends "base.html" %}
+
+{% block title %}System Management - Africa Online Networks{% endblock %}
+
+{% block mobile_content %}
+<div class="card">
+    <h2>System Management</h2>
+    <p>Advanced system management features are available in the admin panel.</p>
+    <a href="/admin/" class="btn btn-primary">
+        <i class="fas fa-cog"></i> Go to Admin Panel
+    </a>
+</div>
+{% endblock %}
+
+{% block desktop_content %}
+<div class="header">
+    <h1>⚙️ System Management</h1>
+    <p>Advanced System Configuration</p>
+</div>
+
+<div class="card">
+    <h3>System Administration</h3>
+    <p>For complete system management including data reset, MikroTik configuration, and system settings, please use the admin panel.</p>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px;">
+        <a href="/admin/" class="btn btn-primary">
+            <i class="fas fa-cogs"></i> Admin Panel
+        </a>
+        <a href="/admin/clients/systemsettings/" class="btn">
+            <i class="fas fa-sliders-h"></i> System Settings
+        </a>
+        <a href="/admin/clients/systemresetlog/" class="btn">
+            <i class="fas fa-history"></i> Reset History
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Data Management</h3>
+    <p>Manage your system data and perform maintenance operations.</p>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 15px;">
+        <a href="/admin/clients/client/" class="btn">
+            <i class="fas fa-users"></i> Manage Clients
+        </a>
+        <a href="/admin/clients/serviceplan/" class="btn">
+            <i class="fas fa-wifi"></i> Internet Packages
+        </a>
+        <a href="/admin/clients/invoice/" class="btn">
+            <i class="fas fa-file-invoice"></i> Manage Invoices
+        </a>
+        <a href="/admin/clients/payment/" class="btn">
+            <i class="fas fa-money-bill-wave"></i> Manage Payments
+        </a>
+    </div>
+</div>
+{% endblock %}

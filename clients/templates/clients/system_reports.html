@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>System Reports - Billing System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .metric-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .metric-card h3 { margin: 0 0 10px 0; color: #666; font-size: 14px; }
+        .metric-value { font-size: 24px; font-weight: bold; color: #333; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .table th, .table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        .table th { background-color: #f8f9fa; font-weight: bold; }
+        .btn { display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; margin: 5px; }
+        .btn-success { background: #28a745; }
+        .health-good { color: #28a745; font-weight: bold; }
+        .health-warning { color: #ffc107; font-weight: bold; }
+        .health-critical { color: #dc3545; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>System Performance & Operational Reports</h1>
+            <div>
+                <a href="/clients/" class="btn">Dashboard</a>
+                <a href="/clients/system/reports/export/" class="btn btn-success">Export CSV</a>
+                <a href="/clients/reports/" class="btn">Back to Reports</a>
+            </div>
+        </div>
+
+        <!-- System Overview -->
+        <div class="section">
+            <h2>System Overview</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Total Clients</h3>
+                    <div class="metric-value">{{ system_metrics.total_clients }}</div>
+                    <div>{{ system_metrics.active_clients }} active</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Service Plans</h3>
+                    <div class="metric-value">{{ system_metrics.total_service_plans }}</div>
+                    <div>{{ system_metrics.active_service_plans }} active</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Financial Activity</h3>
+                    <div class="metric-value">{{ system_metrics.total_invoices }}</div>
+                    <div>{{ system_metrics.total_payments }} payments</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>System Uptime</h3>
+                    <div class="metric-value">{{ system_metrics.system_uptime }}</div>
+                    <div>Current status</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Health -->
+        <div class="section">
+            <h2>System Health Status</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Database Health</h3>
+                    <div class="metric-value health-good">{{ health_indicators.database_health }}</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Application Health</h3>
+                    <div class="metric-value health-good">{{ health_indicators.application_health }}</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Network Health</h3>
+                    <div class="metric-value health-good">{{ health_indicators.network_health }}</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Security Status</h3>
+                    <div class="metric-value health-good">{{ health_indicators.security_status }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div class="section">
+            <h2>Performance Metrics</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Server CPU Usage</h3>
+                    <div class="metric-value">{{ performance_metrics.server_cpu_usage }}%</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Server Memory Usage</h3>
+                    <div class="metric-value">{{ performance_metrics.server_memory_usage }}%</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Database Size</h3>
+                    <div class="metric-value">{{ performance_metrics.database_size }}</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Response Time</h3>
+                    <div class="metric-value">{{ performance_metrics.average_response_time }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Plan Distribution -->
+        <div class="section">
+            <h2>Service Plan Distribution</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Service Plan</th>
+                        <th>Total Clients</th>
+                        <th>Active Clients</th>
+                        <th>Plan Price</th>
+                        <th>Total Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for plan in plan_distribution %}
+                    <tr>
+                        <td>{{ plan.service_plan__name }}</td>
+                        <td>{{ plan.client_count }}</td>
+                        <td>{{ plan.active_clients }}</td>
+                        <td>KSh {{ plan.service_plan__price|floatformat:2 }}</td>
+                        <td>KSh {{ plan.total_revenue|default:0|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Network Usage -->
+        <div class="section">
+            <h2>Network Usage Statistics</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Total Download</h3>
+                    <div class="metric-value">{{ network_stats.total_download_gb|default:0|floatformat:2 }} GB</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Total Upload</h3>
+                    <div class="metric-value">{{ network_stats.total_upload_gb|default:0|floatformat:2 }} GB</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Average Download</h3>
+                    <div class="metric-value">{{ network_stats.average_download|default:0|filesizeformat }}</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Total Records</h3>
+                    <div class="metric-value">{{ network_stats.total_records }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Operational Efficiency -->
+        <div class="section">
+            <h2>Operational Efficiency</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Average Revenue Per User</h3>
+                    <div class="metric-value">KSh {{ efficiency_metrics.arpu|default:0|floatformat:2 }}</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Client Retention Rate</h3>
+                    <div class="metric-value">{{ efficiency_metrics.client_retention_rate }}%</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Invoice Processing Time</h3>
+                    <div class="metric-value">{{ efficiency_metrics.invoice_processing_time }}</div>
+                </div>
+                
+                <div class="metric-card">
+                    <h3>Payment Processing Time</h3>
+                    <div class="metric-value">{{ efficiency_metrics.payment_processing_time }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Maintenance -->
+        <div class="section">
+            <h2>Recent Maintenance Activities</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in maintenance_logs %}
+                    <tr>
+                        <td>{{ log.reset_date|date:"M d, Y H:i" }}</td>
+                        <td>{{ log.reset_type|title }}</td>
+                        <td>{{ log.description }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" style="text-align: center;">No maintenance logs found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,154 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Financial Reports - Billing System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .metric-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .metric-card h3 { margin: 0 0 10px 0; color: #666; font-size: 14px; }
+        .metric-value { font-size: 24px; font-weight: bold; color: #333; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .table th, .table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        .table th { background-color: #f8f9fa; }
+        .btn { display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; }
+        .btn-success { background: #28a745; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Financial Reports</h1>
+            <div>
+                <a href="/clients/" class="btn">Dashboard</a>
+                <a href="/clients/financial/reports/export/" class="btn btn-success">Export CSV</a>
+                <a href="/clients/reports/" class="btn">Back to Reports</a>
+            </div>
+        </div>
+
+        <!-- Date Range Info -->
+        <div class="section">
+            <h2>Report Period: {{ start_date }} to {{ end_date }}</h2>
+            <form method="get" style="display: flex; gap: 10px; align-items: center;">
+                <select name="period" onchange="this.form.submit()">
+                    <option value="daily" {% if period == 'daily' %}selected{% endif %}>Daily</option>
+                    <option value="weekly" {% if period == 'weekly' %}selected{% endif %}>Weekly</option>
+                    <option value="monthly" {% if period == 'monthly' %}selected{% endif %}>Monthly</option>
+                    <option value="quarterly" {% if period == 'quarterly' %}selected{% endif %}>Quarterly</option>
+                    <option value="yearly" {% if period == 'yearly' %}selected{% endif %}>Yearly</option>
+                </select>
+                <button type="submit" class="btn">Apply</button>
+            </form>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="metrics">
+            <div class="metric-card">
+                <h3>Total Revenue</h3>
+                <div class="metric-value">KSh {{ period_revenue|floatformat:2 }}</div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>Active Clients</h3>
+                <div class="metric-value">{{ active_clients }}</div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>Average Revenue Per User</h3>
+                <div class="metric-value">KSh {{ arpu|floatformat:2 }}</div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>Collection Rate</h3>
+                <div class="metric-value">{{ collection_rate|floatformat:1 }}%</div>
+            </div>
+        </div>
+
+        <!-- Revenue by Payment Method -->
+        <div class="section">
+            <h2>Revenue by Payment Method</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Payment Method</th>
+                        <th>Amount</th>
+                        <th>Transactions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for method in revenue_by_method %}
+                    <tr>
+                        <td>{{ method.payment_method|default:"Unknown" }}</td>
+                        <td>KSh {{ method.total|floatformat:2 }}</td>
+                        <td>{{ method.count }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" style="text-align: center;">No payment data available</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Invoice Aging -->
+        <div class="section">
+            <h2>Accounts Receivable Aging</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Aging Category</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Current (Not Due)</td>
+                        <td>KSh {{ invoice_aging.current|floatformat:2 }}</td>
+                    </tr>
+                    <tr>
+                        <td>1-30 Days Overdue</td>
+                        <td>KSh {{ invoice_aging.1_30_days|floatformat:2 }}</td>
+                    </tr>
+                    <tr>
+                        <td>Over 30 Days Overdue</td>
+                        <td>KSh {{ invoice_aging.over_30_days|floatformat:2 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Service Plan Performance -->
+        <div class="section">
+            <h2>Service Plan Performance</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Service Plan</th>
+                        <th>Active Clients</th>
+                        <th>Revenue</th>
+                        <th>Avg per Client</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for plan in plan_performance %}
+                    <tr>
+                        <td>{{ plan.name }}</td>
+                        <td>{{ plan.clients }}</td>
+                        <td>KSh {{ plan.revenue|floatformat:2 }}</td>
+                        <td>KSh {{ plan.avg_revenue|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center;">No service plan data available</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,196 @@
+﻿# SYSTEM MANAGEMENT UTILITIES
+# Copyright (c) 2025 Martin Mutinda
+
+from django.db import transaction
+from django.contrib.auth.models import User
+from .models import Client, ServicePlan, Invoice, Payment, NetworkUsage, SystemSettings, SystemResetLog
+import logging
+
+logger = logging.getLogger(__name__)
+
+class SystemManager:
+    def __init__(self):
+        self.default_settings = {
+            'COMPANY_NAME': {'value': 'Africa Online Networks', 'type': 'string', 'description': 'Company name for display'},
+            'COMPANY_PHONE': {'value': '+254 706 315 742', 'type': 'string', 'description': 'Company contact phone'},
+            'COMPANY_EMAIL': {'value': 'info@africaonlinenetworks.co.ke', 'type': 'string', 'description': 'Company email'},
+            'CURRENCY': {'value': 'KSH', 'type': 'string', 'description': 'Default currency'},
+            'DEFAULT_PPPOE_PRICE': {'value': '2000', 'type': 'decimal', 'description': 'Default PPPoE monthly price'},
+            'DEFAULT_HOTSPOT_PRICE': {'value': '1000', 'type': 'decimal', 'description': 'Default Hotspot monthly price'},
+            'AUTO_CREATE_MIKROTIK_USERS': {'value': 'true', 'type': 'boolean', 'description': 'Automatically create users in MikroTik'},
+            'ENABLE_WHATSAPP_REMINDERS': {'value': 'true', 'type': 'boolean', 'description': 'Enable WhatsApp payment reminders'},
+            'PAYMENT_GRACE_PERIOD': {'value': '7', 'type': 'integer', 'description': 'Payment grace period in days'},
+            'LOW_BALANCE_THRESHOLD': {'value': '500', 'type': 'decimal', 'description': 'Low balance alert threshold'},
+        }
+    
+    def initialize_system_settings(self):
+        """Initialize default system settings"""
+        for key, config in self.default_settings.items():
+            if not SystemSettings.objects.filter(key=key).exists():
+                SystemSettings.objects.create(
+                    key=key,
+                    value=config['value'],
+                    value_type=config['type'],
+                    description=config['description']
+                )
+                logger.info(f"Created system setting: {key}")
+    
+    def get_setting(self, key, default=None):
+        """Get a system setting value"""
+        try:
+            setting = SystemSettings.objects.get(key=key, is_active=True)
+            return setting.get_typed_value()
+        except SystemSettings.DoesNotExist:
+            return default
+    
+    def update_setting(self, key, value):
+        """Update a system setting"""
+        try:
+            setting = SystemSettings.objects.get(key=key)
+            setting.value = str(value)
+            setting.save()
+            return True
+        except SystemSettings.DoesNotExist:
+            return False
+    
+    @transaction.atomic
+    def reset_system_data(self, reset_type='all', user=None, custom_tables=None):
+        """Reset system data based on reset type"""
+        reset_log = SystemResetLog.objects.create(
+            reset_type=reset_type,
+            reset_by=user,
+            description=f"System reset initiated by {user.username if user else 'system'}"
+        )
+        
+        deleted_counts = {
+            'clients_deleted': 0,
+            'invoices_deleted': 0,
+            'payments_deleted': 0,
+            'usage_deleted': 0
+        }
+        
+        try:
+            if reset_type in ['clients', 'all']:
+                # Delete clients and related data
+                clients_count = Client.objects.count()
+                Client.objects.all().delete()
+                deleted_counts['clients_deleted'] = clients_count
+            
+            if reset_type in ['financial', 'all']:
+                # Delete financial data but keep clients
+                invoices_count = Invoice.objects.count()
+                payments_count = Payment.objects.count()
+                usage_count = NetworkUsage.objects.count()
+                
+                Invoice.objects.all().delete()
+                Payment.objects.all().delete()
+                NetworkUsage.objects.all().delete()
+                
+                deleted_counts['invoices_deleted'] = invoices_count
+                deleted_counts['payments_deleted'] = payments_count
+                deleted_counts['usage_deleted'] = usage_count
+            
+            if reset_type == 'custom' and custom_tables:
+                # Custom reset for specific tables
+                for table in custom_tables:
+                    if table == 'clients':
+                        count = Client.objects.count()
+                        Client.objects.all().delete()
+                        deleted_counts['clients_deleted'] = count
+                    elif table == 'invoices':
+                        count = Invoice.objects.count()
+                        Invoice.objects.all().delete()
+                        deleted_counts['invoices_deleted'] = count
+                    elif table == 'payments':
+                        count = Payment.objects.count()
+                        Payment.objects.all().delete()
+                        deleted_counts['payments_deleted'] = count
+                    elif table == 'usage':
+                        count = NetworkUsage.objects.count()
+                        NetworkUsage.objects.all().delete()
+                        deleted_counts['usage_deleted'] = count
+            
+            # Update reset log with actual counts
+            reset_log.clients_deleted = deleted_counts['clients_deleted']
+            reset_log.invoices_deleted = deleted_counts['invoices_deleted']
+            reset_log.payments_deleted = deleted_counts['payments_deleted']
+            reset_log.description = f"Reset completed: {deleted_counts['clients_deleted']} clients, {deleted_counts['invoices_deleted']} invoices, {deleted_counts['payments_deleted']} payments deleted"
+            reset_log.save()
+            
+            logger.info(f"System reset completed: {reset_type}")
+            return True, f"System reset completed successfully. Deleted: {deleted_counts}"
+            
+        except Exception as e:
+            logger.error(f"System reset failed: {str(e)}")
+            reset_log.description = f"Reset failed: {str(e)}"
+            reset_log.save()
+            return False, f"System reset failed: {str(e)}"
+    
+    def get_system_stats(self):
+        """Get current system statistics"""
+        return {
+            'total_clients': Client.objects.count(),
+            'active_clients': Client.objects.filter(is_active=True).count(),
+            'total_invoices': Invoice.objects.count(),
+            'pending_invoices': Invoice.objects.filter(status__in=['draft', 'sent']).count(),
+            'total_payments': Payment.objects.count(),
+            'total_revenue': Payment.objects.aggregate(total=models.Sum('amount'))['total'] or 0,
+            'service_plans': ServicePlan.objects.count(),
+            'system_settings': SystemSettings.objects.count(),
+        }
+    
+    def create_default_service_plans(self):
+        """Create default service plans if they don't exist"""
+        default_plans = [
+            {
+                'name': 'PPPoE Basic',
+                'plan_type': 'pppoe',
+                'price': 2000,
+                'speed': '10Mbps/5Mbps',
+                'data_limit': 'Unlimited',
+                'description': 'Basic PPPoE plan for residential users'
+            },
+            {
+                'name': 'PPPoE Premium',
+                'plan_type': 'pppoe',
+                'price': 3500,
+                'speed': '20Mbps/10Mbps',
+                'data_limit': 'Unlimited',
+                'description': 'Premium PPPoE plan for heavy users'
+            },
+            {
+                'name': 'Hotspot Daily',
+                'plan_type': 'hotspot',
+                'price': 100,
+                'speed': '5Mbps/2Mbps',
+                'data_limit': '2GB per day',
+                'description': 'Daily hotspot plan for casual users'
+            },
+            {
+                'name': 'Hotspot Monthly',
+                'plan_type': 'hotspot',
+                'price': 1000,
+                'speed': '10Mbps/5Mbps',
+                'data_limit': '50GB per month',
+                'description': 'Monthly hotspot plan for regular users'
+            },
+            {
+                'name': 'Business Fiber',
+                'plan_type': 'business',
+                'price': 15000,
+                'speed': '100Mbps/50Mbps',
+                'data_limit': 'Unlimited',
+                'description': 'Business fiber plan for enterprises'
+            }
+        ]
+        
+        created_count = 0
+        for plan_data in default_plans:
+            if not ServicePlan.objects.filter(name=plan_data['name']).exists():
+                ServicePlan.objects.create(**plan_data)
+                created_count += 1
+        
+        return created_count
+
+# Global system manager instance
+system_manager = SystemManager()

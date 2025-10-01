@@ -11,10 +11,10 @@
 # with the terms of the license agreement.
 # 
 # For licensing inquiries:
-# 📧 Email: martinmutinda@africaonlinenetworks.co.ke
-# 📞 Phone: +254 706 315 742
+# ?? Email: martinmutinda@africaonlinenetworks.co.ke
+# ?? Phone: +254 706 315 742
 # 
-# Developed with ❤️ by Martin Mutinda
+# Developed with ?? by Martin Mutinda
 '''
 
 import os
@@ -46,6 +46,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 
 MIDDLEWARE = [
+
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -123,3 +124,36 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'import_export',  # ADD THIS LINE
 ]
+
+
+
+# MikroTik Router Configuration
+MIKROTIK_HOST = '192.168.88.1'  # Replace with your MikroTik IP
+MIKROTIK_USERNAME = 'admin'     # Replace with your username
+MIKROTIK_PASSWORD = ''          # Replace with your password
+MIKROTIK_PORT = 8728
+
+# System Configuration
+SYSTEM_NAME = 'Africa Online Networks'
+SYSTEM_VERSION = 'Enterprise v2.0'
+DEVELOPER = 'Martin Mutinda'
+SUPPORT_EMAIL = 'martinmutinda@africaonlinenetworks.co.ke'
+
+# FORCE CLIENTS ADMIN REGISTRATION
+import sys
+if 'runserver' in sys.argv:
+    try:
+        from django.apps import apps
+        from django.contrib import admin
+        clients_app = apps.get_app_config('clients')
+        for model in clients_app.get_models():
+            if not admin.site.is_registered(model):
+                admin.site.register(model)
+        print('Forced clients admin registration')
+    except Exception as e:
+        print(f'Force registration failed: {e}')
+
+
+
+
+

@@ -1,0 +1,229 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Dashboard - Africa Online Networks{% endblock %}
+
+{% block mobile_content %}
+<div class="stats-grid">
+    <div class="stat-card pulse">
+        <div class="stat-value">KSH {{ monthly_revenue|floatformat:0 }}</div>
+        <div class="stat-label">Monthly Revenue</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ total_clients }}</div>
+        <div class="stat-label">Active Clients</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ active_sessions }}</div>
+        <div class="stat-label">Active Sessions</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ pppoe_clients }}</div>
+        <div class="stat-label">PPPoE Clients</div>
+    </div>
+</div>
+
+<div class="card glass">
+    <h3 style="margin-bottom: 1rem; color: var(--dark);">
+        <i class="fas fa-tachometer-alt"></i> Quick Actions
+    </h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+        <a href="/admin/clients/client/add/" class="btn btn-primary" style="padding: 0.75rem;">
+            <i class="fas fa-plus"></i> New Client
+        </a>
+        <a href="/clients/whatsapp/reminders/" class="btn btn-primary" style="padding: 0.75rem;">
+            <i class="fab fa-whatsapp"></i> Send Reminders
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 1rem; color: var(--dark);">
+        <i class="fas fa-chart-line"></i> Revenue Trend
+    </h3>
+    <div style="height: 200px; background: var(--light); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--dark);">
+        📊 Chart Placeholder
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 1rem; color: var(--dark);">
+        <i class="fas fa-network-wired"></i> Network Status
+    </h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+        <div>
+            <div style="font-size: 1.5rem; font-weight: bold; color: var(--success);">{{ network_uptime }}</div>
+            <div style="font-size: 0.875rem; color: var(--dark);">Uptime</div>
+        </div>
+        <div>
+            <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">{{ active_sessions }}</div>
+            <div style="font-size: 0.875rem; color: var(--dark);">Active Sessions</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 1rem; color: var(--dark);">
+        <i class="fas fa-clock"></i> Recent Activity
+    </h3>
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        {% for payment in recent_payments %}
+        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background: var(--light); border-radius: 8px;">
+            <div style="background: var(--success); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-check"></i>
+            </div>
+            <div>
+                <div style="font-weight: 600;">Payment Received</div>
+                <div style="font-size: 0.875rem; color: #718096;">{{ payment.client.name }} - KSH {{ payment.amount }}</div>
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align: center; padding: 1rem; color: #718096;">
+            <i class="fas fa-inbox"></i>
+            <div>No recent activity</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block desktop_content %}
+<div class="desktop-grid">
+    <div class="card" style="grid-column: span 2;">
+        <h2 style="margin-bottom: 1.5rem; color: var(--dark);">
+            <i class="fas fa-tachometer-alt"></i> Executive Dashboard
+        </h2>
+        <div class="stats-grid">
+            <div class="stat-card pulse">
+                <div class="stat-value">KSH {{ monthly_revenue|floatformat:0 }}</div>
+                <div class="stat-label">Monthly Revenue</div>
+                <div style="font-size: 0.875rem; margin-top: 0.5rem;">
+                    <i class="fas fa-arrow-up" style="color: var(--success);"></i>
+                    Current Month
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ total_clients }}</div>
+                <div class="stat-label">Active Clients</div>
+                <div style="font-size: 0.875rem; margin-top: 0.5rem;">
+                    <i class="fas fa-users" style="color: var(--success);"></i>
+                    {{ pppoe_clients }} PPPoE, {{ hotspot_clients }} Hotspot
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ active_sessions }}</div>
+                <div class="stat-label">Active Sessions</div>
+                <div style="font-size: 0.875rem; margin-top: 0.5rem;">
+                    <i class="fas fa-wifi" style="color: var(--success);"></i>
+                    Live Connections
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ pending_payments }}</div>
+                <div class="stat-label">Pending Payments</div>
+                <div style="font-size: 0.875rem; margin-top: 0.5rem;">
+                    <i class="fas fa-clock" style="color: var(--warning);"></i>
+                    Require Attention
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom: 1rem; color: var(--dark);">
+            <i class="fas fa-chart-line"></i> Quick Analytics
+        </h3>
+        <div style="height: 250px; background: var(--light); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--dark);">
+            📈 Analytics Dashboard
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom: 1rem; color: var(--dark);">
+            <i class="fas fa-users"></i> Client Distribution
+        </h3>
+        <div style="height: 250px; background: var(--light); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--dark);">
+            👥 Client Overview
+        </div>
+    </div>
+
+    <div class="card" style="grid-column: span 2;">
+        <h3 style="margin-bottom: 1rem; color: var(--dark);">
+            <i class="fas fa-network-wired"></i> Network Performance
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+            <div style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: bold; color: var(--success);">{{ network_uptime }}</div>
+                <div style="color: var(--dark);">Network Uptime</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: bold; color: var(--primary);">{{ active_sessions }}</div>
+                <div style="color: var(--dark);">Active Sessions</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: bold; color: var(--secondary);">{{ pppoe_clients }}</div>
+                <div style="color: var(--dark);">PPPoE Clients</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: bold; color: var(--warning);">{{ hotspot_clients }}</div>
+                <div style="color: var(--dark);">Hotspot Clients</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom: 1rem; color: var(--dark);">
+            <i class="fas fa-bell"></i> Recent Alerts
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            {% if pending_payments > 0 %}
+            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #fff3cd; border-radius: 8px; border-left: 4px solid var(--warning);">
+                <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
+                <div>
+                    <div style="font-weight: 600;">Payment Reminder</div>
+                    <div style="font-size: 0.875rem;">{{ pending_payments }} pending payments</div>
+                </div>
+            </div>
+            {% endif %}
+            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #d1ecf1; border-radius: 8px; border-left: 4px solid var(--primary);">
+                <i class="fas fa-info-circle" style="color: var(--primary);"></i>
+                <div>
+                    <div style="font-weight: 600;">System Status</div>
+                    <div style="font-size: 0.875rem;">All systems operational</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom: 1rem; color: var(--dark);">
+            <i class="fas fa-rocket"></i> Quick Actions
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <a href="/admin/clients/client/add/" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Add New Client
+            </a>
+            <a href="/clients/billing/" class="btn btn-primary">
+                <i class="fas fa-file-invoice"></i> Billing Dashboard
+            </a>
+            <a href="/clients/system/management/" class="btn btn-primary">
+                <i class="fas fa-cogs"></i> System Management
+            </a>
+            <a href="/admin/" class="btn btn-primary">
+                <i class="fas fa-cog"></i> Admin Panel
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Add any dashboard-specific JavaScript here
+    console.log('Dashboard loaded successfully');
+    
+    // Auto-refresh dashboard every 30 seconds
+    setInterval(() => {
+        window.location.reload();
+    }, 30000);
+</script>
+{% endblock %}

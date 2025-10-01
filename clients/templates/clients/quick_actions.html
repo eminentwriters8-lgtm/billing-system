@@ -1,0 +1,25 @@
+﻿<!-- Quick Actions Section -->
+<div class="section" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+    <h3>Quick Actions</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+        <a href="{% url 'quick_add_client' %}" class="btn btn-success" style="text-align: center; padding: 15px;">
+            <div style="font-size: 24px; margin-bottom: 5px;">👤</div>
+            <div>Add New Client</div>
+        </a>
+        
+        <a href="{% url 'manage_invoices' %}" class="btn" style="text-align: center; padding: 15px;">
+            <div style="font-size: 24px; margin-bottom: 5px;">🧾</div>
+            <div>Create Invoice</div>
+        </a>
+        
+        <a href="{% url 'manage_payouts' %}" class="btn" style="text-align: center; padding: 15px;">
+            <div style="font-size: 24px; margin-bottom: 5px;">💰</div>
+            <div>Record Payment</div>
+        </a>
+        
+        <a href="{% url 'financial_reports' %}" class="btn" style="text-align: center; padding: 15px;">
+            <div style="font-size: 24px; margin-bottom: 5px;">📊</div>
+            <div>View Reports</div>
+        </a>
+    </div>
+</div>
